@@ -1,92 +1,114 @@
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 #include <WebSocketClient.h>
 
-const char* ssid     = "SSID HERE";
-const char* password = "PASSWORD HERE";
-char path[] = "/";
-char host[] = "echo.websocket.org";
-  
-WebSocketClient webSocketClient;
 
-// Use WiFiClient class to create TCP connections
+#define WIFI_SSID "texas-de-france"
+#define WIFI_PASS "aaaaaaaaaa"
+
+// Server infos
+#define HOST "demos.kaazing.com"
+#define PORT 80
+#define PATH "/echo"
+
+
+WebSocketClient webSocketClient;
 WiFiClient client;
 
-void setup() {
+
+String dataToSend; // update this with the value you wish to send to the server
+
+void setup()
+{
   Serial.begin(115200);
-  delay(10);
 
-  // We start by connecting to a WiFi network
+  // try to connect to the wifi
+  if(connect() == 0) { return ; }
 
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");  
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  delay(5000);
-  
-
-  // Connect to the websocket server
-  if (client.connect("echo.websocket.org", 80)) {
-    Serial.println("Connected");
-  } else {
-    Serial.println("Connection failed.");
-    while(1) {
-      // Hang on failure
-    }
-  }
-
-  // Handshake with the server
-  webSocketClient.path = path;
-  webSocketClient.host = host;
-  if (webSocketClient.handshake(client)) {
-    Serial.println("Handshake successful");
-  } else {
-    Serial.println("Handshake failed.");
-    while(1) {
-      // Hang on failure
-    }  
-  }
+  // once connected to the wifi, let's reach our server
+  if(initWebSocket() == 0) { return ; }
 
 }
 
-
 void loop() {
+  
   String data;
-
+ 
   if (client.connected()) {
-    
+ 
+    webSocketClient.sendData("Info to be echoed back");
+ 
     webSocketClient.getData(data);
     if (data.length() > 0) {
-      Serial.print("Received data: ");
-      Serial.println(data);
+      onDataReceived(data);
     }
-    
-    // capture the value of analog 1, send it along
-    pinMode(1, INPUT);
-    data = String(analogRead(1));
-    
-    webSocketClient.sendData(data);
-    
+    data = "";
+
+    if(dataToSend.length() > 0)
+    {
+      webSocketClient.sendData(dataToSend);
+    }
+    dataToSend = "";
+ 
   } else {
     Serial.println("Client disconnected.");
-    while (1) {
-      // Hang on disconnect.
-    }
+  }
+ 
+  delay(3000);
+ 
+}
+
+void onDataReceived(String &data)
+{
+  Serial.println(data);
+
+  if(data == "Info to be echoed back")
+  {
+    dataToSend = "Info to be echoed back";
+  }
+}
+
+char initWebSocket()
+{
+  if(!client.connect(HOST, PORT)) {
+    Serial.println("Connection failed.");
+    return 0;
+  }
+
+  Serial.println("Connected.");
+  webSocketClient.path = PATH;
+  webSocketClient.host = HOST;
+
+  if (!webSocketClient.handshake(client)) {
+    Serial.println("Handshake failed.");
+    return 0;
+  }
+  Serial.println("Handshake successful");
+  return 1;
+}
+
+/*
+  * Connect to the wifi (credential harcoded in the defines)
+  */ 
+char connect()
+{
+  WiFi.begin(WIFI_SSID, WIFI_PASS); 
+
+  Serial.println("Waiting for wifi");
+  int timeout_s = 30;
+  while (WiFi.status() != WL_CONNECTED && timeout_s-- > 0) {
+      delay(1000);
+      Serial.print(".");
   }
   
-  // wait to fully let the client disconnect
-  delay(3000);
-  
+  if(WiFi.status() != WL_CONNECTED)
+  {
+    Serial.println("unable to connect, check your credentials");
+    return 0;
+  }
+  else
+  {
+    Serial.println("Connected to the WiFi network");
+    Serial.println(WiFi.localIP());
+    return 1;
+  }
 }
