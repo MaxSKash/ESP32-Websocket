@@ -1,23 +1,21 @@
-## Websocket Client and Server for ESP-8266
+# Websocket Client and Server for ESP32
 
-This is a simple library that implements a Websocket client and server running on an ESP-8266.
+This is a simple library that implements a Websocket client and server running on an ESP-32.
+It is based on the work by 
 
-### Getting started
+## Getting started
 
-The example WebSocketServer.html file should be served from any web server you have access to. Remember to change the  URL in it to your Arduino. The examples are based on using a WiFly wireless card to connect. If you're using ethernet instead you'll need to swap out the client class.
+### With the Arduino IDE
 
-Install the library to "libraries" folder in your Arduino sketchbook folder. For example, on a mac that's `~/Documents/Arduino/libraries`.
+git clone this repository in your Arduino library folder. For example on a mac :  
 
-Try the examples to ensure that things work.
+`cd ~/Documents/Arduino/libraries/ && git clone git@github.com:fburel/ESP32-Websocket.git`
 
-Start playing with your own code!
+Once you restart Arduino, two new examples will be added. One shows how to use the WebSocketServer, and the other is about the WebSocketClient.
 
-### Notes
-Inside of the WebSocketServer class there is a compiler directive to turn on support for the older "Hixie76" standard. If you don't need it, leave it off as it greatly increases the memory required.
+## Credits
 
-Because of limitations of the current Arduino platform (Uno at the time of this writing), this library does not support messages larger than 65535 characters. In addition, this library only supports single-frame text frames. It currently does not recognize continuation frames, binary frames, or ping/pong frames.
+Thank you to github user morrissinger for his librairy for ESP8266.
+Also, I started this project by following the recommandations of the tutorials from techtutorialsx,  thanks to them for their work and explanations.
 
-### Credits
-Thank you to github user ejeklint for the excellent starting point for this library. From his original Hixie76-only code I was able to add support for RFC 6455 and create the WebSocket client.
-
-- Branden
+- Florian

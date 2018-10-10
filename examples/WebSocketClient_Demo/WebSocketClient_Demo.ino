@@ -2,8 +2,8 @@
 #include <WebSocketClient.h>
 
 
-#define WIFI_SSID "texas-de-france"
-#define WIFI_PASS "aaaaaaaaaa"
+#define WIFI_SSID "xxxxxxxxxxx" // change with your own wifi ssid
+#define WIFI_PASS "1234" // change with your own wifi password
 
 // Server infos
 #define HOST "demos.kaazing.com"
