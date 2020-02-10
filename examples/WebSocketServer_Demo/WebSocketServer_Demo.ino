@@ -106,7 +106,7 @@ void onDataReceived(String &data)
   {
     dataToSend = "I am sad to see you leave";
   }
-  else if(data = "WAZZUP")
+  else if(data == "WAZZUP")
   {
     dataToSend = "Life socks!";
   }
